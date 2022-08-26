@@ -4,26 +4,26 @@ using System.Runtime.InteropServices;
 namespace LabOfKiwi.Win32;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct CONSOLE_CURSOR_INFO
+internal struct CONSOLE_CURSOR_INFO
 {
     public uint Size;
     public bool Visible;
 }
 
-public enum CONSOLE_TEXTMODE : uint
+internal enum CONSOLE_TEXTMODE : uint
 {
     Buffer = 0x00000001,
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct COORD
+internal struct COORD
 {
     public short X;
     public short Y;
 }
 
 [Flags]
-public enum FILE_SHARE : uint
+internal enum FILE_SHARE : uint
 {
     None      = 0x00000000,
     Read      = 0x00000001,
@@ -32,66 +32,112 @@ public enum FILE_SHARE : uint
 }
 
 [Flags]
-public enum GENERIC : uint
+internal enum GENERIC : uint
 {
     Read      = 0x80000000,
     Write     = 0x40000000,
     ReadWrite = 0xC0000000,
 }
 
-[StructLayout(LayoutKind.Sequential)]
-public struct HANDLE
+/// <summary>
+/// Represents a window's menu item.
+/// </summary>
+public enum MenuItem : uint
 {
-    private const nint InvalidHandleValue = -1;
+    /// <summary>
+    /// Size the window.
+    /// </summary>
+    Size = 0x0000F000,
 
-    private readonly nint _handle;
+    /// <summary>
+    /// Move the window.
+    /// </summary>
+    Move = 0x0000F010,
 
-    private HANDLE(nint handle)
-    {
-        _handle = handle;
-    }
+    /// <summary>
+    /// Maximize the window.
+    /// </summary>
+    Minimize = 0x0000F020,
 
-    public bool IsInvalid => _handle == InvalidHandleValue;
+    /// <summary>
+    /// Minimize the window.
+    /// </summary>
+    Maximize = 0x0000F030,
 
-    public bool IsNull => _handle == 0;
+    /// <summary>
+    /// Move to the next window.
+    /// </summary>
+    NextWindow = 0x0000F040,
 
-    public static implicit operator HANDLE(nint value)
-    {
-        return new HANDLE(value);
-    }
+    /// <summary>
+    /// Move to the previous window.
+    /// </summary>
+    PrevWindow = 0x0000F050,
 
-    public static implicit operator nint(HANDLE value)
-    {
-        return value._handle;
-    }
+    /// <summary>
+    /// Close the window.
+    /// </summary>
+    Close = 0x0000F060,
+
+    /// <summary>
+    /// Scroll vertically.
+    /// </summary>
+    VScroll = 0x0000F070,
+
+    /// <summary>
+    /// Scroll horizontally.
+    /// </summary>
+    HScroll = 0x0000F080,
+
+    /// <summary>
+    /// Retrieve a menu through a mouse click.
+    /// </summary>
+    MouseMenu = 0x0000F090,
+
+    /// <summary>
+    /// Retrieve a menu through a keystroke.
+    /// </summary>
+    KeyMenu = 0x0000F100,
+
+    Arrange = 0x0000F110,
+
+    /// <summary>
+    /// Save the previous coordinates (checkpoint).
+    /// </summary>
+    Restore = 0x0000F120,
+
+    /// <summary>
+    /// Activates the start menu.
+    /// </summary>
+    TaskList = 0x0000F130,
+
+    /// <summary>
+    /// Activates the start menu.
+    /// </summary>
+    ScreenSave = 0x0000F140,
+
+    /// <summary>
+    /// Activate the window associated with the application-specified hot key.
+    /// </summary>
+    HotKey = 0x0000F150,
+
+    Default = 0x0000F160,
+
+    /// <summary>
+    /// Turn off the display.
+    /// </summary>
+    MonitorPower = 0x0000F170,
+
+    /// <summary>
+    /// Show help.
+    /// </summary>
+    ContextHelp = 0x0000F180,
+
+    Separator = 0x0000F00F,
 }
 
-public enum MF : uint
+internal enum MF : uint
 {
     ByCommand  = 0x00000000,
     ByPosition = 0x00000400,
-}
-
-public enum SC : uint
-{
-    Size         = 0x0000F000,
-    Move         = 0x0000F010,
-    Minimize     = 0x0000F020,
-    Maximize     = 0x0000F030,
-    NextWindow   = 0x0000F040,
-    PrevWindow   = 0x0000F050,
-    Close        = 0x0000F060,
-    VScroll      = 0x0000F070,
-    HScroll      = 0x0000F080,
-    MouseMenu    = 0x0000F090,
-    KeyMenu      = 0x0000F100,
-    Arrange      = 0x0000F110,
-    Restore      = 0x0000F120,
-    TaskList     = 0x0000F130,
-    ScreenSave   = 0x0000F140,
-    HotKey       = 0x0000F150,
-    Default      = 0x0000F160,
-    MonitorPower = 0x0000F170,
-    ContextHelp  = 0x0000F180,
-    Separator    = 0x0000F00F,
 }

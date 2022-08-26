@@ -3,6 +3,7 @@ using System.Text;
 
 namespace LabOfKiwi.Win32.Native;
 
+// Interop Methods Contained in Kernel32.dll
 internal static class Kernel32
 {
     [DllImport("kernel32.dll", SetLastError = true)]
