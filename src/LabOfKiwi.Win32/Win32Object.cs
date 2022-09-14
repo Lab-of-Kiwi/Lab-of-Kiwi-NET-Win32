@@ -42,14 +42,14 @@ public abstract class Win32Object
         return $"{base.ToString()}@{hex}";
     }
 
-    protected nint Handle { get; }
+    internal nint Handle { get; }
 
     protected void CloseHandle()
     {
         Kernel32.CloseHandle(Handle);
     }
 
-    protected void ThrowIfDisposed()
+    internal virtual void ThrowIfDisposed()
     {
         if (_disposedValue)
         {

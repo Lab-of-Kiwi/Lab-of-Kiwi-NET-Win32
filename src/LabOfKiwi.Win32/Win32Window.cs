@@ -16,6 +16,8 @@ public abstract class Win32Window : Win32Object
     {
     }
 
+    internal object SyncRoot => _syncRoot;
+
     /// <summary>
     /// Gets the <see cref="Win32Menu"/> for this instance.
     /// </summary>
@@ -68,8 +70,19 @@ public abstract class Win32Window : Win32Object
     {
         lock (_syncRoot)
         {
-            ThrowIfDisposed();
-            User32.GetSystemMenu(Handle, true);
+            if (_menu != null)
+            {
+                lock (_menu.SyncRoot)
+                {
+                    _menu.ThrowIfDisposed();
+                    User32.GetSystemMenu(Handle, true);
+                }
+            }
+            else
+            {
+                ThrowIfDisposed();
+                User32.GetSystemMenu(Handle, true);
+            }
         }
     }
 }

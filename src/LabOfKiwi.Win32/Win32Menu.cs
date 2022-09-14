@@ -13,19 +13,32 @@ public sealed class Win32Menu : Win32Object
         _parentWindow = parentWindow;
     }
 
+    internal object SyncRoot => _syncRoot;
+
     public Win32Window ParentWindow
     {
         get
         {
-            ThrowIfDisposed();
-            return _parentWindow;
+            lock (_syncRoot)
+            {
+                ThrowIfDisposed();
+                return _parentWindow;
+            }
         }
     }
 
     public void DeleteItem(MenuItem item)
     {
-        ThrowIfDisposed();
-        User32.DeleteMenu(Handle, (uint)item, (uint)MF.ByCommand);
+        lock (_syncRoot)
+        {
+            lock (_parentWindow.SyncRoot)
+            {
+                ThrowIfDisposed();
+                User32.DeleteMenu(Handle, (uint)item, (uint)MF.ByCommand);
+                // Note: would check for Win32 error, but for some reason some menu items returns false
+                // but are still deleted.
+            }
+        }
     }
 
     public void DeleteItems(params MenuItem[] items)
@@ -35,16 +48,40 @@ public sealed class Win32Menu : Win32Object
 
     public void DeleteItems(IEnumerable<MenuItem> items)
     {
-        ThrowIfDisposed();
-
         if (items == null)
         {
             throw new ArgumentNullException(nameof(items));
         }
 
-        foreach (var item in items)
+        lock (_syncRoot)
         {
-            User32.DeleteMenu(Handle, (uint)item, (uint)MF.ByCommand);
+            lock (_parentWindow.SyncRoot)
+            {
+                ThrowIfDisposed();
+
+                foreach (var item in items)
+                {
+                    User32.DeleteMenu(Handle, (uint)item, (uint)MF.ByCommand);
+                }
+            }
         }
+    }
+
+    public void Revert()
+    {
+        lock (_syncRoot)
+        {
+            lock (_parentWindow.SyncRoot)
+            {
+                ThrowIfDisposed();
+                User32.GetSystemMenu(_parentWindow.Handle, true);
+            }
+        }
+    }
+
+    internal override void ThrowIfDisposed()
+    {
+        base.ThrowIfDisposed();
+        _parentWindow.ThrowIfDisposed();
     }
 }
